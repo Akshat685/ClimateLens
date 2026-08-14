@@ -1,0 +1,24 @@
+# Copy to samconfig.toml after your first `sam deploy --guided`.
+# samconfig.toml is gitignored because it may contain account-specific settings.
+
+version = 0.1
+
+[default.global.parameters]
+stack_name = "climate-lens-api"
+
+[default.build.parameters]
+cached = true
+parallel = true
+
+[default.validate.parameters]
+lint = true
+
+[default.deploy.parameters]
+capabilities = "CAPABILITY_IAM"
+confirm_changeset = true
+resolve_s3 = true
+region = "us-east-1"
+parameter_overrides = "S3BucketName=YOUR_S3_BUCKET_NAME"
+
+[default.sync.parameters]
+watch = true

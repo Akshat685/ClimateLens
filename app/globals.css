@@ -1,0 +1,273 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Brand */
+    --primary: 221 83% 53%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Surfaces */
+    --background: 0 0% 99%;
+    --surface: 220 14% 96%;
+    --surface-raised: 0 0% 100%;
+
+    /* Text */
+    --foreground: 240 10% 4%;
+    --muted-foreground: 220 9% 46%;
+
+    /* Borders */
+    --border: 220 13% 91%;
+    --border-strong: 220 9% 83%;
+    --input: 220 13% 91%;
+    --ring: 221 83% 53%;
+
+    /* Semantic */
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* shadcn compat */
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 4%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 4%;
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 240 10% 4%;
+    --muted: 220 14% 96%;
+    --accent: 220 14% 96%;
+    --accent-foreground: 240 10% 4%;
+
+    /* Chart */
+    --chart-high: 24 95% 53%;
+    --chart-low: 199 89% 48%;
+    --chart-grid: 220 13% 91%;
+
+    /* Misc */
+    --radius: 0.5rem;
+    --sidebar-width: 320px;
+    --header-height: 56px;
+
+    /* Chart token compat */
+    --chart-1: 221 83% 53%;
+    --chart-2: 142 76% 36%;
+    --chart-3: 24 95% 53%;
+    --chart-4: 199 89% 48%;
+    --chart-5: 38 92% 50%;
+  }
+
+  .dark {
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    --background: 240 10% 4%;
+    --surface: 240 6% 10%;
+    --surface-raised: 240 5% 13%;
+
+    --foreground: 0 0% 95%;
+    --muted-foreground: 240 5% 52%;
+
+    --border: 240 4% 16%;
+    --border-strong: 240 4% 22%;
+    --input: 240 4% 16%;
+    --ring: 217 91% 60%;
+
+    --success: 142 69% 58%;
+    --success-foreground: 240 10% 4%;
+    --warning: 45 93% 47%;
+    --warning-foreground: 240 10% 4%;
+    --destructive: 0 62% 63%;
+    --destructive-foreground: 0 0% 100%;
+
+    --card: 240 5% 13%;
+    --card-foreground: 0 0% 95%;
+    --popover: 240 5% 13%;
+    --popover-foreground: 0 0% 95%;
+    --secondary: 240 6% 10%;
+    --secondary-foreground: 0 0% 95%;
+    --muted: 240 6% 10%;
+    --accent: 240 6% 10%;
+    --accent-foreground: 0 0% 95%;
+
+    --chart-high: 24 90% 60%;
+    --chart-low: 199 89% 55%;
+    --chart-grid: 240 4% 16%;
+
+    --chart-1: 217 91% 60%;
+    --chart-2: 142 69% 58%;
+    --chart-3: 24 90% 60%;
+    --chart-4: 199 89% 55%;
+    --chart-5: 45 93% 47%;
+  }
+
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--border-strong));
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground));
+  }
+}
+
+@layer components {
+  /* Chart styles */
+  .chart-grid-line {
+    stroke: hsl(var(--chart-grid));
+    stroke-width: 1;
+  }
+
+  .chart-axis-label {
+    fill: hsl(var(--muted-foreground));
+    font-size: 11px;
+  }
+
+  .chart-line {
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .chart-line.high {
+    stroke: hsl(var(--chart-high));
+  }
+
+  .chart-line.low {
+    stroke: hsl(var(--chart-low));
+  }
+
+  .chart-dot {
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+
+  .chart-dot.high {
+    fill: hsl(var(--chart-high));
+  }
+
+  .chart-dot.low {
+    fill: hsl(var(--chart-low));
+  }
+
+  .chart-point-group:hover .chart-dot,
+  .chart-canvas:hover .chart-dot {
+    opacity: 1;
+  }
+}
+
+@layer utilities {
+  /* Animation keyframes */
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slide-up {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes slide-in-right {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+  }
+
+  @keyframes slide-in-left {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(0); }
+  }
+
+  @keyframes skeleton-pulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.8; }
+  }
+
+  @keyframes scale-in {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  @keyframes draw-line {
+    from { stroke-dashoffset: var(--line-length, 2000); }
+    to { stroke-dashoffset: 0; }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.3s ease-out forwards;
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.4s ease-out forwards;
+  }
+
+  .animate-slide-in-right {
+    animation: slide-in-right 0.3s ease-out forwards;
+  }
+
+  .animate-slide-in-left {
+    animation: slide-in-left 0.3s ease-out forwards;
+  }
+
+  .animate-skeleton {
+    animation: skeleton-pulse 1.5s ease-in-out infinite;
+  }
+
+  .animate-scale-in {
+    animation: scale-in 0.2s ease-out forwards;
+  }
+
+  /* Stagger children */
+  .stagger-children > * {
+    opacity: 0;
+    animation: slide-up 0.35s ease-out forwards;
+  }
+  .stagger-children > *:nth-child(1) { animation-delay: 0ms; }
+  .stagger-children > *:nth-child(2) { animation-delay: 50ms; }
+  .stagger-children > *:nth-child(3) { animation-delay: 100ms; }
+  .stagger-children > *:nth-child(4) { animation-delay: 150ms; }
+  .stagger-children > *:nth-child(5) { animation-delay: 200ms; }
+  .stagger-children > *:nth-child(6) { animation-delay: 250ms; }
+
+  /* Respect reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-fade-in,
+    .animate-slide-up,
+    .animate-slide-in-right,
+    .animate-slide-in-left,
+    .animate-skeleton,
+    .animate-scale-in,
+    .stagger-children > * {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+}
