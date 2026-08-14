@@ -3,14 +3,15 @@
 import { useMemo } from 'react';
 import {
   ResponsiveContainer,
-  LineChart,
-  Line,
+  AreaChart,
+  Area,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
 } from 'recharts';
 import { ArrowUp, ArrowDown, TrendingUp } from 'lucide-react';
+import { motion } from 'framer-motion';
 import type { WeatherPoint } from '@/lib/weather';
 
 function formatDate(value: string): string {
@@ -29,25 +30,31 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   if (!active || !payload?.length) return null;
 
   return (
-    <div className="rounded-lg border border-border bg-surface-raised px-3.5 py-2.5 shadow-md">
-      <p className="mb-2 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+    <motion.div 
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className="glass-panel rounded-xl px-4 py-3 shadow-xl"
+    >
+      <p className="mb-3 text-[12px] font-semibold uppercase tracking-widest text-muted-foreground">
         {label}
       </p>
-      {payload.map((entry) => (
-        <div key={entry.dataKey} className="flex items-center gap-2 py-0.5 text-[13px]">
-          <span
-            className="h-2 w-2 rounded-full"
-            style={{ backgroundColor: entry.color }}
-          />
-          <span className="text-muted-foreground">
-            {entry.dataKey === 'temperature_max' ? '↑ High' : '↓ Low'}
-          </span>
-          <span className="ml-auto font-semibold tabular-nums text-foreground">
-            {entry.value.toFixed(1)}°C
-          </span>
-        </div>
-      ))}
-    </div>
+      <div className="space-y-2">
+        {payload.map((entry) => (
+          <div key={entry.dataKey} className="flex items-center gap-3 text-[14px]">
+            <span
+              className="h-2.5 w-2.5 rounded-full shadow-[0_0_8px_rgba(0,0,0,0.5)]"
+              style={{ backgroundColor: entry.color, boxShadow: `0 0 12px ${entry.color}` }}
+            />
+            <span className="font-medium text-foreground">
+              {entry.dataKey === 'temperature_max' ? 'High Temp' : 'Low Temp'}
+            </span>
+            <span className="ml-auto font-bold tabular-nums tracking-tight">
+              {entry.value.toFixed(1)}°
+            </span>
+          </div>
+        ))}
+      </div>
+    </motion.div>
   );
 }
 
@@ -76,110 +83,127 @@ export function WeatherChart({ daily }: { daily: WeatherPoint[] }) {
   }, [daily]);
 
   return (
-    <div className="animate-fade-in rounded-xl border border-border bg-surface-raised">
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: 0.1 }}
+      className="glass-panel overflow-hidden rounded-2xl"
+    >
       {/* Chart header */}
-      <div className="flex flex-wrap items-start justify-between gap-4 border-b border-border px-5 py-4">
+      <div className="flex flex-wrap items-start justify-between gap-4 border-b border-border/50 px-6 py-5">
         <div>
-          <h3 className="text-[15px] font-semibold text-foreground">Temperature Trend</h3>
-          <p className="mt-0.5 text-[12px] text-muted-foreground">
-            Daily high and low temperatures
+          <h3 className="text-base font-semibold text-foreground">Temperature Trend</h3>
+          <p className="mt-1 text-[13px] text-muted-foreground">
+            Historical highs and lows
           </p>
         </div>
 
         {/* Legend */}
-        <div className="flex items-center gap-4 text-[12px]">
-          <span className="flex items-center gap-1.5 text-muted-foreground">
-            <span className="h-0.5 w-4 rounded-full bg-chart-high" />
+        <div className="flex items-center gap-5 text-[13px] font-medium">
+          <span className="flex items-center gap-2 text-foreground">
+            <span className="h-1.5 w-4 rounded-full bg-chart-high shadow-[0_0_8px_hsl(var(--chart-high))]" />
             High
           </span>
-          <span className="flex items-center gap-1.5 text-muted-foreground">
-            <span className="h-0.5 w-4 rounded-full bg-chart-low" style={{ backgroundImage: 'repeating-linear-gradient(90deg, hsl(var(--chart-low)) 0px, hsl(var(--chart-low)) 4px, transparent 4px, transparent 7px)' }} />
+          <span className="flex items-center gap-2 text-foreground">
+            <span className="h-1.5 w-4 rounded-full bg-chart-low shadow-[0_0_8px_hsl(var(--chart-low))]" />
             Low
           </span>
-          <span className="text-muted-foreground/60">°C</span>
         </div>
       </div>
 
       {/* Chart summary metrics */}
       {metrics && (
-        <div className="flex divide-x divide-border border-b border-border">
-          <div className="flex-1 px-5 py-3">
-            <p className="text-[11px] text-muted-foreground">Highest</p>
-            <p className="mt-0.5 flex items-center gap-1 text-[15px] font-semibold tabular-nums text-chart-high">
-              <ArrowUp size={13} strokeWidth={2} />
-              {metrics.highest.toFixed(1)}°C
+        <div className="flex divide-x divide-border/50 border-b border-border/50 bg-surface/30">
+          <div className="flex-1 px-6 py-4">
+            <p className="text-[12px] font-medium uppercase tracking-wider text-muted-foreground">Highest</p>
+            <p className="mt-1.5 flex items-center gap-1.5 text-[18px] font-bold tabular-nums tracking-tight text-chart-high drop-shadow-[0_0_8px_rgba(255,105,180,0.4)]">
+              <ArrowUp size={16} strokeWidth={2.5} />
+              {metrics.highest.toFixed(1)}°
             </p>
           </div>
-          <div className="flex-1 px-5 py-3">
-            <p className="text-[11px] text-muted-foreground">Lowest</p>
-            <p className="mt-0.5 flex items-center gap-1 text-[15px] font-semibold tabular-nums text-chart-low">
-              <ArrowDown size={13} strokeWidth={2} />
-              {metrics.lowest.toFixed(1)}°C
+          <div className="flex-1 px-6 py-4">
+            <p className="text-[12px] font-medium uppercase tracking-wider text-muted-foreground">Lowest</p>
+            <p className="mt-1.5 flex items-center gap-1.5 text-[18px] font-bold tabular-nums tracking-tight text-chart-low drop-shadow-[0_0_8px_rgba(0,255,255,0.4)]">
+              <ArrowDown size={16} strokeWidth={2.5} />
+              {metrics.lowest.toFixed(1)}°
             </p>
           </div>
-          <div className="flex-1 px-5 py-3">
-            <p className="text-[11px] text-muted-foreground">Range</p>
-            <p className="mt-0.5 flex items-center gap-1 text-[15px] font-semibold tabular-nums text-foreground">
-              <TrendingUp size={13} strokeWidth={2} />
-              {metrics.range.toFixed(1)}°C
+          <div className="flex-1 px-6 py-4">
+            <p className="text-[12px] font-medium uppercase tracking-wider text-muted-foreground">Spread</p>
+            <p className="mt-1.5 flex items-center gap-1.5 text-[18px] font-bold tabular-nums tracking-tight text-foreground">
+              <TrendingUp size={16} strokeWidth={2.5} className="text-muted-foreground" />
+              {metrics.range.toFixed(1)}°
             </p>
           </div>
         </div>
       )}
 
       {/* Chart */}
-      <div className="px-2 pb-4 pt-4 sm:px-4">
-        <div className="h-64 w-full sm:h-72">
+      <div className="px-2 pb-4 pt-6 sm:px-4">
+        <div className="h-[300px] w-full sm:h-[340px]">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData} margin={{ top: 8, right: 12, left: -8, bottom: 4 }}>
+            <AreaChart data={chartData} margin={{ top: 10, right: 12, left: -10, bottom: 0 }}>
+              <defs>
+                <linearGradient id="colorHigh" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="hsl(var(--chart-high))" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="hsl(var(--chart-high))" stopOpacity={0} />
+                </linearGradient>
+                <linearGradient id="colorLow" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="hsl(var(--chart-low))" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="hsl(var(--chart-low))" stopOpacity={0} />
+                </linearGradient>
+              </defs>
               <CartesianGrid
-                strokeDasharray="3 3"
-                stroke="hsl(var(--border))"
+                strokeDasharray="4 4"
+                stroke="hsl(var(--chart-grid))"
                 vertical={false}
               />
               <XAxis
                 dataKey="dateFormatted"
-                tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+                tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))', fontWeight: 500 }}
                 tickLine={false}
-                axisLine={{ stroke: 'hsl(var(--border))' }}
+                axisLine={false}
                 interval="preserveStartEnd"
+                dy={10}
               />
               <YAxis
-                tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+                tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))', fontWeight: 500 }}
                 tickLine={false}
                 axisLine={false}
                 tickFormatter={(val: number) => `${val}°`}
-                width={36}
+                width={40}
+                dx={-10}
               />
               <Tooltip
                 content={<CustomTooltip />}
                 cursor={{ stroke: 'hsl(var(--border-strong))', strokeWidth: 1, strokeDasharray: '4 4' }}
               />
-              <Line
+              <Area
                 type="monotone"
                 dataKey="temperature_max"
                 stroke="hsl(var(--chart-high))"
-                strokeWidth={2}
-                dot={false}
-                activeDot={{ r: 4, strokeWidth: 0, fill: 'hsl(var(--chart-high))' }}
-                animationDuration={800}
+                strokeWidth={3}
+                fillOpacity={1}
+                fill="url(#colorHigh)"
+                activeDot={{ r: 6, strokeWidth: 0, fill: 'hsl(var(--chart-high))', style: { filter: 'drop-shadow(0 0 8px hsl(var(--chart-high)))' } }}
+                animationDuration={1500}
                 animationEasing="ease-out"
               />
-              <Line
+              <Area
                 type="monotone"
                 dataKey="temperature_min"
                 stroke="hsl(var(--chart-low))"
-                strokeWidth={2}
-                strokeDasharray="6 4"
-                dot={false}
-                activeDot={{ r: 4, strokeWidth: 0, fill: 'hsl(var(--chart-low))' }}
-                animationDuration={800}
+                strokeWidth={3}
+                fillOpacity={1}
+                fill="url(#colorLow)"
+                activeDot={{ r: 6, strokeWidth: 0, fill: 'hsl(var(--chart-low))', style: { filter: 'drop-shadow(0 0 8px hsl(var(--chart-low)))' } }}
+                animationDuration={1500}
                 animationEasing="ease-out"
               />
-            </LineChart>
+            </AreaChart>
           </ResponsiveContainer>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

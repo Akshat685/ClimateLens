@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { BarChart3, CloudSun } from 'lucide-react';
+import { BarChart3, CloudSun, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
+import { motion, AnimatePresence } from 'framer-motion';
 
 import { Header } from '@/components/layout/header';
 import { Sidebar } from '@/components/layout/sidebar';
@@ -130,97 +131,135 @@ export default function Home() {
   };
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden bg-background">
-      <Header sidebarOpen={sidebarOpen} onToggleSidebar={() => setSidebarOpen((v) => !v)} />
+    <div className="flex h-screen flex-col overflow-hidden bg-background relative">
+      {/* Animated Background Blobs */}
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-primary/20 rounded-full mix-blend-multiply filter blur-[100px] opacity-70 animate-blob dark:mix-blend-screen dark:bg-primary/10"></div>
+        <div className="absolute top-[20%] right-[-10%] w-96 h-96 bg-[hsl(var(--chart-high))]/20 rounded-full mix-blend-multiply filter blur-[100px] opacity-70 animate-blob animation-delay-2000 dark:mix-blend-screen dark:bg-[hsl(var(--chart-high))]/10"></div>
+        <div className="absolute bottom-[-20%] left-[20%] w-96 h-96 bg-[hsl(var(--chart-low))]/20 rounded-full mix-blend-multiply filter blur-[100px] opacity-70 animate-blob animation-delay-4000 dark:mix-blend-screen dark:bg-[hsl(var(--chart-low))]/10"></div>
+      </div>
 
-      <div className="flex flex-1 overflow-hidden">
-        <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)}>
-          <WeatherForm
-            latitude={latitude}
-            longitude={longitude}
-            startDate={startDate}
-            endDate={endDate}
-            loading={storeLoading}
-            onLatitudeChange={setLatitude}
-            onLongitudeChange={setLongitude}
-            onStartDateChange={setStartDate}
-            onEndDateChange={setEndDate}
-            onSubmit={handleStore}
-          />
-          <FileBrowser
-            files={files}
-            selectedFile={selectedFile}
-            loading={filesLoading}
-            error={filesError}
-            onSelectFile={(f) => void loadFile(f)}
-            onRefresh={() => void loadFiles()}
-          />
-        </Sidebar>
+      <div className="relative z-10 flex h-full flex-col">
+        <Header sidebarOpen={sidebarOpen} onToggleSidebar={() => setSidebarOpen((v) => !v)} />
 
-        <main className="flex-1 overflow-y-auto">
-          <div className="mx-auto max-w-[960px] px-5 py-6 sm:px-8 lg:py-8">
-            {/* Page header */}
-            <div className="animate-fade-in mb-8">
-              <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-[28px]">
-                Weather Data Explorer
-              </h1>
-              <p className="mt-1.5 max-w-lg text-[14px] leading-relaxed text-muted-foreground">
-                Explore historical temperature patterns and manage weather snapshots stored in S3.
-              </p>
+        <div className="flex flex-1 overflow-hidden">
+          <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)}>
+            <WeatherForm
+              latitude={latitude}
+              longitude={longitude}
+              startDate={startDate}
+              endDate={endDate}
+              loading={storeLoading}
+              onLatitudeChange={setLatitude}
+              onLongitudeChange={setLongitude}
+              onStartDateChange={setStartDate}
+              onEndDateChange={setEndDate}
+              onSubmit={handleStore}
+            />
+            <FileBrowser
+              files={files}
+              selectedFile={selectedFile}
+              loading={filesLoading}
+              error={filesError}
+              onSelectFile={(f) => void loadFile(f)}
+              onRefresh={() => void loadFiles()}
+            />
+          </Sidebar>
 
-              {/* Mobile sidebar trigger */}
-              <button
-                type="button"
-                onClick={() => setSidebarOpen(true)}
-                className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface-raised px-3.5 py-2 text-[13px] font-medium text-muted-foreground transition-colors duration-150 hover:text-foreground lg:hidden"
+          <main className="flex-1 overflow-y-auto">
+            <div className="mx-auto max-w-[1024px] px-6 py-10 sm:px-10 lg:py-12">
+              {/* Page header */}
+              <motion.div 
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-12 text-center sm:text-left"
               >
-                <CloudSun size={14} strokeWidth={1.8} />
-                Open data explorer
-              </button>
+                <h1 className="text-[36px] font-black tracking-tighter sm:text-[48px] bg-clip-text text-transparent bg-gradient-to-r from-primary via-[hsl(var(--chart-low))] to-[hsl(var(--chart-high))] pb-2 drop-shadow-sm">
+                  Weather Data Explorer
+                </h1>
+                <p className="mt-1 max-w-2xl text-[16px] leading-relaxed text-muted-foreground/90 font-medium">
+                  Fetch, store, and analyze historical temperature patterns powered by Open-Meteo and secure AWS S3 storage.
+                </p>
+
+                {/* Mobile sidebar trigger */}
+                <button
+                  type="button"
+                  onClick={() => setSidebarOpen(true)}
+                  className="mt-6 inline-flex items-center gap-2 rounded-xl border border-primary/20 bg-primary/10 px-6 py-3 text-[14px] font-bold text-primary shadow-[0_0_15px_rgba(var(--primary),0.2)] transition-all duration-200 hover:bg-primary hover:text-primary-foreground lg:hidden"
+                >
+                  <CloudSun size={18} strokeWidth={2.5} />
+                  Open Data Explorer
+                </button>
+              </motion.div>
+
+              {/* Content */}
+              <div className="min-h-[600px] relative">
+                <AnimatePresence mode="wait">
+                  {selectedFile && payload ? (
+                    <motion.div
+                      key="data-view"
+                      initial={{ opacity: 0, scale: 0.98, y: 10 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.98, y: -10 }}
+                      transition={{ duration: 0.4, staggerChildren: 0.1 }}
+                      className="space-y-8"
+                    >
+                      <WeatherSummary
+                        payload={payload}
+                        fileName={selectedFile.name}
+                        loading={payloadLoading}
+                      />
+                      <WeatherChart daily={payload.daily} />
+                      <WeatherTable daily={payload.daily} fileName={selectedFile.name} />
+                    </motion.div>
+                  ) : payloadLoading ? (
+                    <motion.div
+                      key="loading-view"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="space-y-8"
+                    >
+                      <WeatherSummary payload={null} fileName={null} loading={true} />
+                      <div className="h-[360px] animate-skeleton rounded-3xl glass-panel bg-surface/40" />
+                      <div className="h-72 animate-skeleton rounded-2xl glass-panel bg-surface/40" />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="empty-view"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="flex items-center justify-center pt-8"
+                    >
+                      <EmptyState
+                        icon={Sparkles}
+                        title="Ready to Explore?"
+                        description="Select a stored snapshot from your sidebar, or fetch a brand new weather dataset to instantly visualize temperature patterns."
+                        action={
+                          <button
+                            type="button"
+                            onClick={() => setSidebarOpen(true)}
+                            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-primary to-[hsl(var(--chart-low))] px-8 py-3.5 text-[15px] font-bold text-white shadow-glow-primary transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_-5px_hsl(var(--primary))] active:scale-95 lg:hidden"
+                          >
+                            Get Started
+                          </button>
+                        }
+                      />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
 
-            {/* Content */}
-            {selectedFile && payload ? (
-              <div className="space-y-6">
-                <WeatherSummary
-                  payload={payload}
-                  fileName={selectedFile.name}
-                  loading={payloadLoading}
-                />
-                <WeatherChart daily={payload.daily} />
-                <WeatherTable daily={payload.daily} fileName={selectedFile.name} />
-              </div>
-            ) : payloadLoading ? (
-              <div className="space-y-6">
-                <WeatherSummary payload={null} fileName={null} loading={true} />
-                <div className="h-80 animate-skeleton rounded-xl border border-border bg-surface-raised" />
-                <div className="h-64 animate-skeleton rounded-xl border border-border bg-surface-raised" />
-              </div>
-            ) : (
-              <EmptyState
-                icon={BarChart3}
-                title="No snapshot selected"
-                description="Select a stored snapshot from the sidebar, or fetch a new weather dataset to begin exploring temperature data."
-                action={
-                  <button
-                    type="button"
-                    onClick={() => setSidebarOpen(true)}
-                    className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-[13px] font-medium text-primary-foreground transition-colors duration-150 hover:bg-primary/90 lg:hidden"
-                  >
-                    Fetch Weather Data
-                  </button>
-                }
-              />
-            )}
-          </div>
-
-          {/* Footer */}
-          <footer className="border-t border-border px-5 py-5 sm:px-8">
-            <p className="text-[11px] text-muted-foreground/50">
-              ClimateLens · Open-Meteo historical archive · AWS S3 storage
-            </p>
-          </footer>
-        </main>
+            {/* Footer */}
+            <footer className="mt-16 border-t border-border/40 px-6 py-8 sm:px-10">
+              <p className="text-center text-[13px] font-semibold tracking-wide text-muted-foreground/50">
+                ClimateLens · Powered by Open-Meteo & AWS S3
+              </p>
+            </footer>
+          </main>
+        </div>
       </div>
     </div>
   );

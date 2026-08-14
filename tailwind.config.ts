@@ -69,6 +69,10 @@ const config: Config = {
           '5': 'hsl(var(--chart-5))',
         },
       },
+      boxShadow: {
+        'glow-primary': '0 0 20px -5px hsl(var(--primary) / 0.5)',
+        'glow-destructive': '0 0 20px -5px hsl(var(--destructive) / 0.5)',
+      },
       borderRadius: {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
