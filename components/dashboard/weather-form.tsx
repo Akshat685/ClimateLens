@@ -58,7 +58,7 @@ export function WeatherForm({
               <input
                 type="text"
                 inputMode="decimal"
-                placeholder="Latitude"
+                placeholder="-90 to 90"
                 value={latitude}
                 onChange={(e) => onLatitudeChange(e.target.value)}
                 aria-label="Latitude"
@@ -69,7 +69,7 @@ export function WeatherForm({
               <input
                 type="text"
                 inputMode="decimal"
-                placeholder="Longitude"
+                placeholder="-180 to 180"
                 value={longitude}
                 onChange={(e) => onLongitudeChange(e.target.value)}
                 aria-label="Longitude"
